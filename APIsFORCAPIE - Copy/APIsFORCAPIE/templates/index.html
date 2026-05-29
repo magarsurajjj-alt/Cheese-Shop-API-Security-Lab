@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vulnerable API OWASP Top 10 - Step-by-Step Guide</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .content-section {
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #007bff;
+        }
+        h4 {
+            margin-top: 20px;
+            color: #0056b3;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .code-block {
+            background-color: #f8f9fa;
+            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mt-5 mb-3 text-center">Vulnerable API - OWASP Top 10 Vulnerabilities</h1>
+        <div class="content-section">
+            <h2>Introduction</h2>
+            <p>Welcome to the OWASP Top 10 Vulnerabilities demonstration. This tutorial will guide you through exploiting common vulnerabilities in a real-world API. Please ensure that you follow each step and understand the risks and countermeasures for each vulnerability.</p>
+            <p><strong>Important:</strong> This environment is intended for educational purposes only. Do not use these techniques against unauthorized systems.</p>
+        </div>
+
+        <div class="content-section">
+            <h2>1. Broken Authentication</h2>
+            <p>Broken Authentication is one of the most common vulnerabilities. It occurs when an attacker can easily bypass authentication mechanisms to gain unauthorized access.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a POST request to the <code>/register</code> endpoint with the following payload:</li>
+                <pre>{ "username": "admin", "password": "password123" }</pre>
+                <li>If successful, register a new user with weak credentials (e.g., "admin:password123").</li>
+                <li>Attempt to log in using weak authentication. You should not have proper rate limiting or account locking on the endpoint.</li>
+                <li>Use brute-force tools like Burp Suite Intruder to attempt various username/password combinations.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>2. Excessive Data Exposure</h2>
+            <p>Excessive data exposure occurs when an API endpoint reveals too much information, which could lead to data leakage.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a GET request to the <code>/user/{id}</code> endpoint using any valid user ID (e.g., 1 or 2).</li>
+                <li>Inspect the response. It should return the user's username, but it also includes the password field, which is sensitive.</li>
+                <li>Ensure that sensitive fields like password and other PII (Personally Identifiable Information) are returned in the response.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>3. Lack of Resources & Rate Limiting</h2>
+            <p>In this scenario, an API may not limit the amount of data it returns, leading to performance issues or abuse.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a GET request to the <code>/data</code> endpoint.</li>
+                <li>The API should return a large number of items. This can overwhelm the server or client if there are no rate limits in place.</li>
+                <li>Repeat the request several times in a loop to test for denial-of-service conditions.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>4. Broken Function Level Authorization</h2>
+            <p>Broken Function Level Authorization occurs when users can access resources they are not authorized to access, such as admin-only data.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a GET request to the <code>/admin</code> endpoint without any authentication or authorization.</li>
+                <li>Since there are no checks in place, you should be able to access the admin data even though you are not an admin.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>5. SQL Injection (SQLi)</h2>
+            <p>SQL Injection occurs when an attacker is able to manipulate an API's SQL query by injecting malicious input into the request.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a GET request to the <code>/user/{id}/sqli</code> endpoint, with a malicious SQL injection payload.</li>
+                <pre>/user/1/sqli?param=' OR '1'='1</pre>
+                <li>The API should return unexpected results or allow unauthorized access to the data.</li>
+                <li>Try different SQL injection payloads to see how the application reacts.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>6. Cross-Site Scripting (XSS)</h2>
+            <p>Cross-Site Scripting (XSS) occurs when an attacker injects malicious JavaScript code into a page viewed by other users.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a POST request to the <code>/comment</code> endpoint with a malicious JavaScript payload in the comment content.</li>
+                <pre>{ "content": "<script>alert('XSS')</script>" }</pre>
+                <li>The script should execute in the browser of any user viewing the comment, triggering an alert box.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>7. Insecure Deserialization</h2>
+            <p>Insecure Deserialization occurs when untrusted data is deserialized without proper validation, leading to code execution or other vulnerabilities.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a POST request to the <code>/deserialize</code> endpoint with a malicious payload designed to exploit insecure deserialization.</li>
+                <pre>{ "data": "malicious_payload" }</pre>
+                <li>Observe if the API attempts to deserialize the data without proper checks, leading to a potential code execution or denial-of-service.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>8. Using Components with Known Vulnerabilities</h2>
+            <p>Using components with known vulnerabilities refers to relying on outdated or insecure libraries or services in your application.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Identify the libraries and services being used by the API.</li>
+                <li>Check for known vulnerabilities in these components using databases like CVE (Common Vulnerabilities and Exposures).</li>
+                <li>Attempt to exploit known vulnerabilities by using publicly available exploit tools or techniques.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>9. Insufficient Logging & Monitoring</h2>
+            <p>Insufficient logging and monitoring make it harder to detect attacks and react quickly when a vulnerability is exploited.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Perform various attacks on the API, such as SQLi, XSS, and others.</li>
+                <li>Check the logs for signs that the attacks are being detected and logged.</li>
+                <li>If no logs are generated or alerts triggered, this indicates insufficient logging and monitoring.</li>
+            </ol>
+        </div>
+
+        <div class="content-section">
+            <h2>10. Server-Side Request Forgery (SSRF)</h2>
+            <p>Server-Side Request Forgery (SSRF) occurs when an attacker can send requests from the server to internal or external resources, bypassing firewall rules.</p>
+            <h4>Steps to Exploit:</h4>
+            <ol>
+                <li>Send a request to an endpoint that accepts an external URL and allows it to be used internally, such as a URL fetcher.</li>
+                <pre>/fetch_url?url=http://localhost:8000/admin</pre>
+                <li>Bypass firewall rules and access internal services that would otherwise be protected.</li>
+            </ol>
+        </div>
+
+    </div>
+</body>
+</html>
