@@ -40,14 +40,16 @@ python app.py
 http://127.0.0.1:5107/apidocs
 ```
 
-🔐 Features
+# 🔐Features
+```
 User Registration & Login
 JWT Authentication
 Cheese Inventory Management
 Add / Update / Sell Cheese
 Swagger API Documentation
-⚠️ Security Disclaimer
-
+```
+# ⚠️Security Disclaimer
+```
 ⚠️ This application is intentionally vulnerable.
 
 It is designed ONLY for:
@@ -55,10 +57,10 @@ It is designed ONLY for:
 Educational purposes
 Cybersecurity learning
 Penetration testing practice
+```
 
-Do NOT deploy in production.
-
-🧪 Identified Vulnerabilities
+# 🧪Identified Vulnerabilities
+```
 🔴 Critical Issues
 Plaintext password storage
 Hardcoded JWT secret key
@@ -72,7 +74,10 @@ Weak authentication design
 Stored XSS risk (unsanitized input)
 Verbose error messages
 No logging or monitoring system
-🧪 Example API Endpoints
+```
+
+# 🧪Example API Endpoints
+```
 Register User
 POST /register
 Login
@@ -86,25 +91,25 @@ Update Cheese
 PUT /cheeses/<id>
 Sell Cheese
 POST /cheeses/<id>/sell
-🧪 Testing Tools Used
+```
+# 🧪Testing Tools Used
+```
 Postman
 Swagger UI
 Manual API testing
 JWT decoder (jwt.io)
-📸 Screenshots
+```
+# 📸Screenshots
 
-(Add your Postman screenshots here)
 
-Example:
 
-Login success
-Add cheese request
-Vulnerability tests (negative price, XSS input)
-📊 Learning Outcome
 
+# 📊Learning Outcome
+```
 This project demonstrates:
 
 How insecure APIs behave
 How attackers exploit input validation flaws
 JWT authentication weaknesses
 Real-world API penetration testing workflow
+```
