@@ -1,0 +1,192 @@
+# 🔐 Security Assessment Report  
+## Cheese Shop API – Vulnerability Testing
+
+---
+
+# 📌 1. Executive Summary
+
+This report documents the security testing performed on the Cheese Shop API built using Flask.  
+The assessment focused on authentication, authorization, input validation, and API security weaknesses.
+
+The system contains multiple vulnerabilities that could be exploited if deployed in a production environment.
+
+---
+
+# 🎯 2. Scope
+
+### In Scope:
+- /register
+- /login
+- /cheeses (GET, POST)
+- /cheeses/<id> (GET, PUT)
+- /cheeses/<id>/sell
+
+### Out of Scope:
+- Server infrastructure
+- Operating system security
+- Network-level attacks
+
+---
+
+# 🧪 3. Testing Methodology
+
+Testing was performed using:
+
+- Postman (manual API testing)
+- JWT token analysis (jwt.io)
+- Input manipulation techniques
+- Boundary value testing
+- Authentication bypass attempts
+
+---
+
+# 🔴 4. Vulnerabilities Found
+
+---
+
+## 4.1 Plaintext Password Storage
+
+### Description:
+Passwords are stored directly in the database without hashing.
+
+### Risk Level:
+🔴 Critical
+
+### Impact:
+If database is leaked, all user passwords are exposed.
+
+### Evidence:
+User passwords appear in plain text inside SQLite database.
+
+### Recommendation:
+Use bcrypt or Argon2 hashing.
+
+---
+
+## 4.2 Weak JWT Secret Key
+
+### Description:
+The application uses a hardcoded weak secret key.
+
+```python
+SECRET_KEY = 'supercheesesecret'
+Risk Level:
+
+🔴 Critical
+
+Impact:
+
+Attackers may forge JWT tokens if secret is guessed.
+
+Recommendation:
+
+Use environment variables for secret keys.
+
+4.3 Broken Access Control (No RBAC)
+Description:
+
+All authenticated users have full access to all operations.
+
+Risk Level:
+
+🔴 High
+
+Impact:
+
+Users can:
+
+Add cheese
+Update cheese
+Sell cheese
+Recommendation:
+
+Implement role-based access control (admin/user separation).
+
+4.4 Missing Input Validation
+Description:
+
+API accepts negative and invalid values.
+
+Example:
+{
+  "price": -100,
+  "stock": -5
+}
+Risk Level:
+
+🟠 High
+
+Impact:
+
+Data corruption and logical errors.
+
+Recommendation:
+
+Add validation rules for numeric fields.
+
+4.5 No Rate Limiting on Login
+Description:
+
+Unlimited login attempts allowed.
+
+Risk Level:
+
+🟠 High
+
+Impact:
+
+Brute-force password attacks possible.
+
+Recommendation:
+
+Implement rate limiting (Flask-Limiter).
+
+4.6 Stored XSS Risk
+Description:
+
+User input is not sanitized.
+
+Example:
+<script>alert(1)</script>
+Risk Level:
+
+🟡 Medium
+
+Impact:
+
+If displayed in UI, leads to XSS attack.
+
+4.7 No Type Validation
+Description:
+
+API accepts incorrect data types (string instead of number).
+
+Risk Level:
+
+🟡 Medium
+
+Recommendation:
+
+Validate JSON schema using marshmallow or pydantic.
+
+🟡 5. Positive Security Findings
+SQL Injection protection is implemented using parameterized queries
+JWT authentication is present
+Basic required field validation exists
+📊 6. Risk Summary
+Severity	Count
+Critical	2
+High	2
+Medium	3
+Low	0
+🛠️ 7. Recommendations
+Implement password hashing (bcrypt)
+Add RBAC (admin/user roles)
+Enforce input validation
+Add rate limiting for login
+Store secrets in environment variables
+Sanitize user input to prevent XSS
+🧠 8. Conclusion
+
+The Cheese Shop API is suitable for educational and penetration testing purposes.
+However, it is not secure for production deployment due to multiple critical vulnerabilities.
